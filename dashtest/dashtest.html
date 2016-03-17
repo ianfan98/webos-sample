@@ -2,44 +2,208 @@
 <html>
 <head>
 <style type="text/css">
+
+@font-face {
+	font-family: "Miso";
+	src: local("/font/miso.otf")
+}
+
 body {
+		font-family: "Miso", serif; 
 		width: 100%; 
 		height: 100%;
 		background-color: #202020;
 } 
 
-div {
-	    position:absolute; 
-		height:100%; 
-		width:100%;
-		display: table;
+table, th, td {
+	border:1px solid black;
+	border-collapse:collapse;
 }
 
-h1 {
-	    display: table-cell;
-		vertical-align: middle;
-		text-align:center;
-		color: #FFFFFF;
+table {
+    position:absolute; 
+	left: 32%;
+    top: 20%;
 }
+
+table th{
+	height: 60px;
+	width: 325px;
+	color: #ffffff;
+	background-color: #d80546;
+	border: 5px solid #595959;
+	padding: 3px;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 40px;
+}
+
+table td {
+	height: 60px;
+	background-color: #ffffff;
+	border: 5px solid #595959;
+	padding: 5px;
+	padding-top: 7px;
+	padding-bottom: 7px;
+	padding-left: 15px;
+	padding-right: 15px;
+	vertical-align: middle;
+	font-size: 40px;
+}
+
+
 </style>
-	<script src="webOSjs-0.1.0/webOS.js" charset="utf-8"></script>
-	<script type="text/javascript">
-	   //sample code for calling LS2 API
-       var lunaReq= webOS.service.request("luna://com.palm.systemservice",
-        {
-            method:"clock/getTime",
-            parameters:{},
-            onSuccess: function (args) {
-				console.log("UTC:", args.utc);
-            },
-            onFailure: function (args) {
-            }
-        });
-	</script>
+
+<script src="webOSjs-0.1.0/webOS.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+    var Samples = [
+        "http://vm2.dashif.org/livesim/testpic_2s/Manifest.mpd",
+        "http://b028.wpc.azureedge.net/80B028/Samples/a38e6323-95e9-4f1f-9b38-75eba91704e4/5f2ce531-d508-49fb-8152-647eba422aec.ism/Manifest(format=mpd-time-csf)",
+         "http://wams.edgesuite.net/media/SintelTrailer_MP4_from_WAME/sintel_trailer-1080p.ism/manifest(format=mpd-time-csf)",
+         "http://wams.edgesuite.net/media/SintelTrailer_Smooth_from_WAME_CENC/CENC/sintel_trailer-1080p.ism/manifest(format=mpd-time-csf)"
+        ];
+     
+   
+    function PlaySample(sample_index){
+      var src_url = Samples[sample_index];
+      PlayDash(src_url);
+    }
+
+    function PlayDash(src_url){
+    	   
+         var source = document.createElement("source");
+    
+         source.setAttribute('src', src_url);
+         source.setAttribute('type', 'application/dash+xml');
+         var video = document.getElementById('media-src');
+         if(!video.paused) {
+             video.pause();
+             Log("pause video")
+         }
+         if(video.hasChildNodes()) {
+             //if already exist, remove
+             video.removeChild(video.childNodes[0]);
+             Log(" remove src")
+         }
+         video.appendChild(source);
+         Log("Play src:" + src_url);
+  
+         video.play();     	
+    }
+
+  
+    function Log(msg)
+    {
+        var o= document.getElementById('logger');
+        o.innerHTML += msg + "</br>";
+    }
+
+
+    function Pause()
+    {
+      var v = document.getElementById('media-src');
+      Log("pause time=" + v.currentTime);
+      
+      v.pause();
+    }
+    function Resume()
+    {
+      var v = document.getElementById('media-src');
+      Log("Resume time=" + v.currentTime);
+      
+      v.play();
+    }
+
+    function onPlay(){
+      var video = document.getElementById('media-src');
+      console.log("EVENT: PLAY, mediaId="+ video.mediaId);
+    }
+        
+    function onPlaying(){
+      var vid = document.getElementById('media-src');
+      console.log("EVENT: PLAYING:"+ vid.videoWidth +'x'+ vid.videoHeight);
+      Log("EVENT: PLAYING");
+    }
+        
+    function onEnded(){
+      console.log("EVENT: ENDED");
+      Log("EVENT: ended");
+    }
+
+    function onCanplay(){
+      console.log("EVENT: CANPLAY");
+    }
+
+    function onPause(){
+      console.log("EVENT: PAUSE");
+      Log("EVENT: pause");
+    }
+    function onRatechange(){
+      console.log("EVENT: RATECHANGE");
+      Log("EVENT: RATECHANGE");
+    }
+    function onResize(){
+      console.log("EVENT: RESIZE");
+    }
+
+    function onTimeupdate(){
+      var vid = document.getElementById('media-src');
+      console.log("EVENT: TIMEUPDATE: "+ vid.videoWidth + "x" + vid.videoHeight+ " : "+ vid.currentTime);
+    }
+
+    </script>
 </head>
+
 <body>
-	<div> 
-		<h1>Hello World!</h1>
-	</div>
+    <div style='align:center;'>
+          <video  id="media-src"  width = "960" height = "540"  controls >         
+          </video>
+          
+          <script>
+          var vid = document.getElementById("media-src");
+      
+          vid.addEventListener("playing", onPlaying);
+          vid.addEventListener("play", onPlay);
+          vid.addEventListener("ended", onEnded);
+          vid.addEventListener("canplay", onCanplay);
+          vid.addEventListener("pause", onPause);
+          vid.addEventListener("ratechange", onRatechange);
+          vid.addEventListener("resize", onResize);
+          vid.addEventListener("timeupdate", onTimeupdate);
+    
+
+     var events = ["loadstart", 
+                  "emptied", 
+                  "canplaythrough",
+                  "progress",
+                  "stalled",
+                  "durationchange",
+                  "suspend",
+                  "loadmetadata",
+                  "waiting",
+                  "volumechange",
+                  "abort",
+                  "error",
+                  "loadeddata",
+                  "seeking",
+                  "seeked"
+                  ];
+
+          for(i=0; i<events.length; i++){
+            vid.addEventListener( events[i], function(evt) {
+              console.log("EVENT: " + evt.type + "timestamp:" + evt.timeStamp);
+              });
+          }
+          </script>
+    </div>  
+	 
+    <button type="button" onclick="PlaySample(0)"> LIVE 1</button>
+    <button type="button" onclick="PlaySample(1)"> LIVE 2</button>
+    <button type="button" onclick="PlaySample(2)"> VOD 1</button>
+    <button type="button" onclick="PlaySample(3)"> VOD 2</button>
+   
+    <div id="logger" style="width:1000px; height:400px; overflow:scroll; background-color:gray;"></div>
+ 	
 </body>
 </html>
