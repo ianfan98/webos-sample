@@ -1,0 +1,11 @@
+{
+    "id": "dashtest.app",
+    "version": "0.0.1",
+    "vendor": "My Company",
+    "type": "web",
+    "main": "dashtest.html",
+    "title": "dashtest",
+    "icon": "icon.png",
+    "largeIcon": "largeIcon.png",
+    "uiRevision":2
+}
